@@ -1,2 +1,2 @@
 # TPALGO
-Short program for our 2nd eyar algo project
+2nd year algo project 
