@@ -3,26 +3,34 @@
 #include <math.h>
 #include <stdlib.h>
 
-int verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales)
+Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales)
 {
     int i;
     for (i=0;i<(*taille_tab_alerte);i++)
     {
         if (pos==(alerte+i)->position)
         {
-            return 0;
+            printf("la position existe deja\n");
+            return NULL;
         }
     }
+    Alerte* newalerte;
     *taille_tab_alerte=*taille_tab_alerte+1;
-    alerte=malloc((*taille_tab_alerte)*sizeof(Alerte));
-    (alerte+i)->position=pos;
-    (alerte+i)->nombre_deformations_locales = nmbdeformlocales;
-    return 1;
+    newalerte = realloc(alerte,sizeof(Alerte)*(*taille_tab_alerte));
+    if(newalerte == NULL)
+    {
+       printf("un probleme est survenu lors de l'allocation de memoire\n");
+       return NULL;
+    }
+    (newalerte+i)->position=pos;
+    (newalerte+i)->nombre_deformations_locales = nmbdeformlocales;
+    return newalerte;
 }
 
 Alerte* ChercheAlerte(Position* paquet,int taillepak){
    Alerte* alertes = NULL;
-   int i,k;
+   Alerte* newalertes;
+   int i = 0,k;
    int nmbdeformlocales;
    int premierealerte = 0;
    int premierepos;
@@ -45,7 +53,7 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
       }
       else{
          nmbdeformlocales=0;
-         i++
+         i++;
       }
    }
    if(alertes == NULL){
@@ -58,7 +66,11 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
          }
       }
       if(nmbdeformlocales>=100){
-         verification(paquet[i],alertes,&taillealertes,nmbdeformlocales);
+         newalertes = Verification(paquet[i],alertes,&taillealertes,nmbdeformlocales);
+         if(newalertes != NULL){
+            alertes = newalertes;
+            newalertes = NULL;
+         }
          nmbdeformlocales = 0;
       }
       else{
@@ -66,7 +78,7 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
       }
 
    }
-
+   printf("nombre d alertes : %d\n", taillealertes);
    return alertes;
 }
 

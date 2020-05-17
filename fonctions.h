@@ -10,7 +10,6 @@ typedef struct Alerte Alerte;
 
 Alerte* ChercheAlerte(Position* paquet,int taillepak);
 
-int verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales)
-
+Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales);
 
 
