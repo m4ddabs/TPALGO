@@ -10,7 +10,6 @@ Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmb
     {
         if (pos==(alerte+i)->position)
         {
-            printf("la position existe deja\n");
             return NULL;
         }
     }
@@ -30,18 +29,18 @@ Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmb
 Alerte* ChercheAlerte(Position* paquet,int taillepak){
    Alerte* alertes = NULL;
    Alerte* newalertes;
-   int i = 0,k;
+   int i = 0;
+   int k;
    int nmbdeformlocales;
    int premierealerte = 0;
    int premierepos;
    int taillealertes = 0;
-   while(premierealerte == 0 || i!=taillepak){
+   while(premierealerte == 0 && i!=taillepak){
       for(k=0;k<taillepak;k++){
          if(abs(paquet[i]-paquet[k])<=100){
             nmbdeformlocales = nmbdeformlocales + 1;
          }
       }
-
       if(nmbdeformlocales>=100){
          alertes = malloc(sizeof(Alerte));
          taillealertes = taillealertes + 1;
@@ -57,6 +56,7 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
       }
    }
    if(alertes == NULL){
+      printf("pas d'alertes\n");
       return alertes;
    }
    for(i=premierepos;i<taillepak;i++){
@@ -81,4 +81,3 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
    printf("nombre d alertes : %d\n", taillealertes);
    return alertes;
 }
-
