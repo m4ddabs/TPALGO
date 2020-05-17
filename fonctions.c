@@ -29,7 +29,7 @@ Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmb
 
 Alerte* ChercheAlerte(Position* paquet,int taillepak){
    Alerte* alertes = NULL;
-   int i,k;
+   int i = 0,k;
    int nmbdeformlocales;
    int premierealerte = 0;
    int premierepos;
