@@ -52,7 +52,7 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
       }
       else{
          nmbdeformlocales=0;
-         i++
+         i++;
       }
    }
    if(alertes == NULL){
