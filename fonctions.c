@@ -31,7 +31,7 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
    Alerte* newalertes;
    int i = 0;
    int k;
-   int nmbdeformlocales;
+   int nmbdeformlocales = 0;
    int premierealerte = 0;
    int premierepos;
    int taillealertes = 0;
