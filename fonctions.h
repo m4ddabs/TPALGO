@@ -1,52 +1,39 @@
 #include <time.h> /* pour la mesure du temps de calcul */
 #define PRECISION 1 /* en m */
 #define DIST_MAX_VOISIN 100 /* en m */
-#define SEUIL_ALERTE 100 /* en nombre de déformations */
+#define SEUIL_ALERTE 100 /* en nombre de dÃ©formations */
 
 /***  mesure du temps de calcul  ***/
 void redemarrer_chronometre();
 int relever_chronometre_ms();  /* en millisecondes */
 
-
-// Modelisation de l'alerte
-
+/***  modelisation rudimentaire ***/
 typedef int Position;
-
 struct Alerte{
     Position position;
     int nombre_deformations_locales;
 };
-
 typedef struct Alerte Alerte;
-
-//Fonctions Pour chercher alertes
-
-Alerte* ChercheAlerte(Position* paquet,int taillepak);
-
-Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales);
 
 /***  simulation d'un paquet de deformations  ***/
 
-/* différentes configurations des déformations */
+/* diffÃ©rentes configurations des dÃ©formations */
 enum Simulation {UNIFORME, MONOMODALE, BIMODALE, QUASIMONOTONE};
-typedef enum Simulation Simulation;
+typedef enum Simulation Simulation; 
 
 /* Simulation proprement dite
  *
  *     ENTREES
- * nombres_positions : le nombre de positions possibles (les positions sont
- *     repérées par des entiers entre 0 et nombre_positions - 1)
- * nombre_deformations : le nombre de déformations simulées
- * simulation : configuration des déformations considérées
+ * nombres_positions : le nombre de positions possibles (les positions sont 
+ *     repÃ©rÃ©es par des entiers entre 0 et nombre_positions - 1)
+ * nombre_deformations : le nombre de dÃ©formations simulÃ©es
+ * simulation : configuration des dÃ©formations considÃ©rÃ©es
  *
  *     SORTIE
- * pointeur sur un paquet de deformations, c'est-à-dire un tableau de positions
+ * pointeur sur un paquet de deformations, c'est-Ã -dire un tableau de positions
  * comprises entre 0 et nombres_positions - 1, de taille nombre_deformations */
 Position* simuler_deformations(Position nombre_positions,
     int nombre_deformations, Simulation simulation);
 
-/* Libère la mémoire utilisée par un paquet de déformations */
+/* LibÃ¨re la mÃ©moire utilisÃ©e par un paquet de dÃ©formations */
 void detruire_deformations(Position* paquet);
-
-
-

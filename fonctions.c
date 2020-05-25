@@ -1,89 +1,6 @@
-#include <stdio.h>
 #include "fonctions.h"
-#include <math.h>
 #include <stdlib.h>
-//Fonctions pour la cherche d'alertes
-
-Alerte* Verification(Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales)
-{
-    int i;
-    for (i=0;i<(*taille_tab_alerte);i++)
-    {
-        if (pos==(alerte+i)->position)
-        {
-            return NULL;
-        }
-    }
-    Alerte* newalerte;
-    *taille_tab_alerte=*taille_tab_alerte+1;
-    newalerte = realloc(alerte,sizeof(Alerte)*(*taille_tab_alerte));
-    if(newalerte == NULL)
-    {
-       printf("un probleme est survenu lors de l'allocation de memoire\n");
-       return NULL;
-    }
-    (newalerte+i)->position=pos;
-    (newalerte+i)->nombre_deformations_locales = nmbdeformlocales;
-    return newalerte;
-}
-
-Alerte* ChercheAlerte(Position* paquet,int taillepak){
-   Alerte* alertes = NULL;
-   Alerte* newalertes;
-   int i = 0;
-   int k;
-   int nmbdeformlocales = 0;
-   int premierealerte = 0;
-   int premierepos;
-   int taillealertes = 0;
-   while(premierealerte == 0 && i!=taillepak){
-      for(k=0;k<taillepak;k++){
-         if(abs(paquet[i]-paquet[k])<=100){
-            nmbdeformlocales = nmbdeformlocales + 1;
-         }
-      }
-      if(nmbdeformlocales>=100){
-         alertes = malloc(sizeof(Alerte));
-         taillealertes = taillealertes + 1;
-         alertes[0].position = paquet[i];
-         alertes[0].nombre_deformations_locales = nmbdeformlocales;
-         nmbdeformlocales = 0;
-         premierepos = i+1;
-         premierealerte = 1;
-      }
-      else{
-         nmbdeformlocales=0;
-         i++;
-      }
-   }
-   if(alertes == NULL){
-      printf("pas d'alertes\n");
-      return alertes;
-   }
-   for(i=premierepos;i<taillepak;i++){
-      for(k=0;k<taillepak;k++){
-         if(abs(paquet[i]-paquet[k])<=100){
-            nmbdeformlocales = nmbdeformlocales + 1;
-         }
-      }
-      if(nmbdeformlocales>=100){
-         newalertes = Verification(paquet[i],alertes,&taillealertes,nmbdeformlocales);
-         if(newalertes != NULL){
-            alertes = newalertes;
-            newalertes = NULL;
-         }
-         nmbdeformlocales = 0;
-      }
-      else{
-      nmbdeformlocales = 0;
-      }
-
-   }
-   printf("nombre d alertes : %d\n", taillealertes);
-   return alertes;
-}
-
-//Fonctions pour la simulation du paquet
+#include <stdio.h>
 
 static clock_t temps_cpu;
 
@@ -97,8 +14,8 @@ int relever_chronometre_ms()
     return (clock() - temps_cpu)/((double) CLOCKS_PER_SEC)*1000;
 }
 
-/* tire aléatoirement une valeur réelle selon une distribution triangulaire
- * centrée en 1/2 et de largeur 1 */
+/* tire alÃ©atoirement une valeur rÃ©elle selon une distribution triangulaire
+ * centrÃ©e en 1/2 et de largeur 1 */
 double distribution_triangulaire(){
     int valeur;
     int accepte = 0;
@@ -113,13 +30,13 @@ double distribution_triangulaire(){
     return valeur/(double) RAND_MAX;
 }
 
-/* tire aléatoirement une position selon une distribution triangulaire */
+/* tire alÃ©atoirement une position selon une distribution triangulaire */
 Position position_distr_triang(Position centre, int largeur)
 {
     return centre - largeur/2 + (int) (largeur*distribution_triangulaire());
 }
 
-/* transformation d'un tableau de positions tirées uniformément en une
+/* transformation d'un tableau de positions tirÃ©es uniformÃ©ment en une
  * distribution quasi-monotone */
 /* fonction auxiliaire : ordonne les positions autour d'une valeur pivot */
 int distribuer_pivot(Position* positions, int n)
@@ -160,8 +77,8 @@ Position* simuler_deformations(Position nombre_positions,
 {
     Position* paquet = malloc(sizeof(Position)*nombre_deformations);
     if (!paquet){
-        fprintf(stderr, "Nombre de déformations trop grand, pas assez de "
-            "mémoire.\n");
+        fprintf(stderr, "Nombre de dÃ©formations trop grand, pas assez de "
+            "mÃ©moire.\n");
         exit(EXIT_FAILURE);
     }
     int i;
@@ -172,7 +89,7 @@ Position* simuler_deformations(Position nombre_positions,
         }
     }else{
         if (simulation == MONOMODALE){
-            /* distribution triangulaire centrée sur la position centrale,
+            /* distribution triangulaire centrÃ©e sur la position centrale,
              * largeur quart */
             Position centre = nombre_positions/4;
             int largeur = nombre_positions/4;
@@ -180,8 +97,8 @@ Position* simuler_deformations(Position nombre_positions,
                 paquet[i] = position_distr_triang(centre, largeur);
             }
         }else if (simulation == BIMODALE){
-            /* deux distributions triangulaires centrées sur les positions en
-             * premier et troisième quartile, largeur huitième */
+            /* deux distributions triangulaires centrÃ©es sur les positions en
+             * premier et troisiÃ¨me quartile, largeur huitiÃ¨me */
             int largeur = nombre_positions/8;
             for (i = 0; i < nombre_deformations; i++){
                 Position centre = (rand() % 2) ?
@@ -192,7 +109,7 @@ Position* simuler_deformations(Position nombre_positions,
             for (i = 0; i < nombre_deformations; i++){
                 paquet[i] = rand() % nombre_positions;
             }
-            /* une valeur d'arrêt assez grande assure des inversions */
+            /* une valeur d'arrÃªt assez grande assure des inversions */
             int arret = SEUIL_ALERTE;
             transf_quasi_monotone(paquet, nombre_deformations, arret);
         }else{
