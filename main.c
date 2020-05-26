@@ -1,27 +1,27 @@
 #include "fonctions.h"
 #include <stdio.h>
 #define LONGUEUR_CABLE 1000000 /* en m */
-#define NOMBRE_DEFORMATIONS 100000 /* en nombre de déformations */
+#define NOMBRE_DEFORMATIONS 100000 /* en nombre de dÃ©formations */
 
 int main()
 {
-    /* paramètres */
+    /* paramÃ¨tres */
     int nombre_positions = LONGUEUR_CABLE/PRECISION;
     int nombre_deformations = NOMBRE_DEFORMATIONS;
     Simulation simulation = UNIFORME;
 
-    int temps_ecoule; /* pour chronométrer */
+    int temps_ecoule; /* pour chronomÃ©trer */
     Alerte* alertes;
-    printf("Simulation de %i déformations sur %i positions, configuration "
+    printf("Simulation de %i dÃ©formations sur %i positions, configuration "
         "%i... ", nombre_deformations, nombre_positions, simulation);
     redemarrer_chronometre();
     Position* paquet = simuler_deformations(nombre_positions,nombre_deformations, simulation); //Creation du paquet de positions
-    printf("terminée.\n");
+    printf("terminÃ©e.\n");
     alertes = ChercheAlerte(paquet, nombre_deformations); // Determination des Alertes
-    printf("terminée.\n");
+    printf("terminÃ©e.\n");
 
     temps_ecoule = relever_chronometre_ms();
-    printf("Temps écoulé : %i ms.\n", temps_ecoule);
+    printf("Temps Ã©coulÃ© : %i ms.\n", temps_ecoule);
 
     detruire_deformations(paquet);
 
