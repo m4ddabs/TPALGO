@@ -1,5 +1,4 @@
 #include "fonctions.h"
-#include "rapport_deformations.h"
 #include <stdlib.h>
 #include <stdio.h>
 #define LONGUEUR_CABLE 1000000 /* en m */
