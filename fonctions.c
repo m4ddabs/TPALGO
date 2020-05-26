@@ -1,127 +1,94 @@
 #include "fonctions.h"
+#include "rapport_deformations.h"
 #include <stdlib.h>
 #include <stdio.h>
+#define LONGUEUR_CABLE 1000000 /* en m */
+#define NOMBRE_DEFORMATIONS 100000 /* en nombre de déformations */
 
-static clock_t temps_cpu;
-
-void redemarrer_chronometre()
+Alerte* verification (Position pos, Alerte* alerte,int* taille_tab_alerte,int nmbdeformlocales)
 {
-    temps_cpu = clock();
-}
-
-int relever_chronometre_ms()
-{
-    return (clock() - temps_cpu)/((double) CLOCKS_PER_SEC)*1000;
-}
-
-/* tire aléatoirement une valeur réelle selon une distribution triangulaire
- * centrée en 1/2 et de largeur 1 */
-double distribution_triangulaire(){
-    int valeur;
-    int accepte = 0;
-    while (!accepte){
-        valeur = rand();
-        if (valeur <= RAND_MAX/2){
-            accepte = (rand() % RAND_MAX/2) <= valeur;
-        }else{
-            accepte = (rand() % RAND_MAX/2) <= RAND_MAX - valeur;
-        }
-    }
-    return valeur/(double) RAND_MAX;
-}
-
-/* tire aléatoirement une position selon une distribution triangulaire */
-Position position_distr_triang(Position centre, int largeur)
-{
-    return centre - largeur/2 + (int) (largeur*distribution_triangulaire());
-}
-
-/* transformation d'un tableau de positions tirées uniformément en une
- * distribution quasi-monotone */
-/* fonction auxiliaire : ordonne les positions autour d'une valeur pivot */
-int distribuer_pivot(Position* positions, int n)
-{
-    Position pivot = positions[0];
-    int i = 1;
-    int j = n;
-    while (i < j){
-        if (positions[i] <= pivot){
-            i++;
-        }else{
-            j--;
-            Position tmp = positions[j];
-            positions[j] = positions[i];
-            positions[i] = tmp;
-        }
-    }
-    if (i == n){
-        positions[0] = positions[n - 1];
-        positions[n - 1] = pivot;
-        return n - 1;
-    }
-    return i;
-}
-
-/* transformation : tri partiel */
-void transf_quasi_monotone(Position* deformations, int nombre_deformations,
-    int arret)
-{
-    if (nombre_deformations < arret){ return; }
-    int i = distribuer_pivot(deformations, nombre_deformations);
-    transf_quasi_monotone(deformations, i, arret);
-    transf_quasi_monotone(deformations + i, nombre_deformations - i, arret);
-}
-
-Position* simuler_deformations(Position nombre_positions,
-    int nombre_deformations, Simulation simulation)
-{
-    Position* paquet = malloc(sizeof(Position)*nombre_deformations);
-    if (!paquet){
-        fprintf(stderr, "Nombre de déformations trop grand, pas assez de "
-            "mémoire.\n");
-        exit(EXIT_FAILURE);
-    }
     int i;
-    if (simulation == UNIFORME){
-        /* distribution uniforme */
-        for (i = 0; i < nombre_deformations; i++){
-            paquet[i] = rand() % nombre_positions;
-        }
-    }else{
-        if (simulation == MONOMODALE){
-            /* distribution triangulaire centrée sur la position centrale,
-             * largeur quart */
-            Position centre = nombre_positions/4;
-            int largeur = nombre_positions/4;
-            for (i = 0; i < nombre_deformations; i++){
-                paquet[i] = position_distr_triang(centre, largeur);
-            }
-        }else if (simulation == BIMODALE){
-            /* deux distributions triangulaires centrées sur les positions en
-             * premier et troisième quartile, largeur huitième */
-            int largeur = nombre_positions/8;
-            for (i = 0; i < nombre_deformations; i++){
-                Position centre = (rand() % 2) ?
-                    nombre_positions/4 : 3*nombre_positions/4;
-                paquet[i] = position_distr_triang(centre, largeur);
-            }
-        }else if (simulation == QUASIMONOTONE){
-            for (i = 0; i < nombre_deformations; i++){
-                paquet[i] = rand() % nombre_positions;
-            }
-            /* une valeur d'arrêt assez grande assure des inversions */
-            int arret = SEUIL_ALERTE;
-            transf_quasi_monotone(paquet, nombre_deformations, arret);
-        }else{
-            fprintf(stderr, "Configuration %i invalide.\n", simulation);
-            exit(EXIT_FAILURE);
+    for (i=0;i<(*taille_tab_alerte);i++)
+    {
+        if (pos==(alerte+i)->position)
+        {
+            return NULL; //si la position est déjà dans le tableau d'alertes, on ne fait rien
         }
     }
-
-    return paquet;
+    *taille_tab_alerte=*taille_tab_alerte+1; //la position n'est pas encore présente, on incrémente de 1 la taille du tableau
+    Alerte* new_alerte=realloc(alerte,(*taille_tab_alerte)*sizeof(Alerte)); //on alloue dynamiquement au tableau l'espace supplémentaire nécessaire
+    (new_alerte+i)->position=pos; //on ajoute les informations sur l'alerte dans le tableau
+    (new_alerte+i)->nombre_deformations_locales=nmbdeformlocales;
+    return new_alerte; //le pointeur vers le tableau actualisé est retourné
 }
 
-void detruire_deformations(Position* paquet)
+void permuter(int *a, int *b) {
+    int tmp;
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+void triRapid(int tab[], int first, int last) {
+    int pivot, i, j;
+    if(first < last) {
+        pivot = first;
+        i = first;
+        j = last;
+        while (i < j) {
+            while(tab[i] <= tab[pivot] && i < last)
+                i++;
+            while(tab[j] > tab[pivot])
+                j--;
+            if(i < j) {
+                permuter(&tab[i], &tab[j]);
+            }
+        }
+        permuter(&tab[pivot], &tab[j]);
+        triRapid(tab, first, j - 1);
+        triRapid(tab, j + 1, last);
+    }
+}
+
+Alerte* reperer_alertes (Position* paquet, Alerte* alerte, int* taille_tab_alerte)
 {
-    free(paquet);
+    int i,j,voisins=0;
+    Alerte* test;
+    for(i=0;i<NOMBRE_DEFORMATIONS;i++) //on parcourt tout le paquet
+    {
+        j=i;
+        while((paquet[i]-DIST_MAX_VOISIN)<=paquet[j] && j>0)
+        {
+            voisins++;
+            j--;
+            //on récupère les voisins à gauche de la position étudiée
+        }
+        j=i+1;
+        while(paquet[j]<=(paquet[i]+DIST_MAX_VOISIN) && j<NOMBRE_DEFORMATIONS)
+        {
+            voisins++;
+            j++;
+            //on récupère les voisins à droite de la position étudiée
+        }
+        if(voisins>=100) //si une alerte est déclarée
+        {
+            if(alerte==NULL) //s'il s'agit de la première alerte
+            {
+                alerte=malloc(sizeof(Alerte));
+                *taille_tab_alerte=1;
+                alerte->nombre_deformations_locales=voisins;
+                alerte->position=paquet[i];
+            }
+            else
+            {
+                test=verification(paquet[i],alerte,taille_tab_alerte,voisins); //on vérifie si l'alerte est un doublon ou non
+                if(test!=NULL) //si l'alerte n'est pas un doublon
+                {
+                    alerte=test; //on actualise le pointeur
+                }
+            }
+        }
+        voisins=0; //réinitialisation du nombre de voisins avant de passer à la position suivante
+    }
+    return alerte; //retourne le pointeur vers le tableau complet d'alertes après avoir étudié toutes les positions
 }
