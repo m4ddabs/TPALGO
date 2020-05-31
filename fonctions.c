@@ -39,7 +39,7 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
    int taillealertes = 0;
 
    /** Premiere boucle **/
-   /** Elle serte a chercher la premiere alerte. Si il n'y a pas d'alerte
+   /** Elle sert a chercher la premiere alerte. Si il n'y a pas d'alerte,
         alertes reste initialise sur NULL donc le programme se terminera **/
 
    while(premierealerte == 0 && i!=taillepak){
@@ -69,10 +69,10 @@ Alerte* ChercheAlerte(Position* paquet,int taillepak){
 
    /**Deuxieme boucle**/
    /** Elle sert a chercher le reste des alertes
-   Elle presque identique a la premiere boucle sauf que ici nous n'arreterons pas si on trouve une alerte et nous allons verfier
+   Elle est presque identique a la premiere boucle sauf que ici nous n'arreterons pas si on trouve une alerte et nous allons verfier
    si une alerte donnee existe deja dans le tableau d'alertes avant de la rentrer dans celui ci**/
 
-   for(i=premierepos;i<taillepak;i++){ // On parcours le paquet
+   for(i=premierepos;i<taillepak;i++){ // On parcours le paquet en commençant par la position qui se trouve juste après la position de la première alerte
       for(k=0;k<taillepak;k++){
          if(abs(paquet[i]-paquet[k])<=100){
             nmbdeformlocales = nmbdeformlocales + 1;
