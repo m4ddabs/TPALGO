@@ -1,4 +1,4 @@
-#include "fonctions.h"
+#include "fonctions_fs.h"
 #include <stdlib.h>
 #include <stdio.h>
 #define LONGUEUR_CABLE 1000000 /* en m */

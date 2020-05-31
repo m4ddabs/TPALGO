@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "fonctions.h"
+#include "fonctions_no_fast_sorting.h"
 #include <math.h>
 #include <stdlib.h>
 //Fonctions pour la cherche d'alertes

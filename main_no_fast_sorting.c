@@ -1,4 +1,4 @@
-#include "fonctions.h"
+#include "fonctions_no_fast_sorting.h"
 #include <stdio.h>
 #define LONGUEUR_CABLE 1000000 /* en m */
 #define NOMBRE_DEFORMATIONS 100000 /* en nombre de déformations */
